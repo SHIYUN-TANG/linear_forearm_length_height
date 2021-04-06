@@ -1,0 +1,58 @@
+---
+title: "find the linear regression between forearm length and height"
+author: "SHIYUN TANG"
+date: "4/6/2021"
+output: html_document
+---
+
+## I. Introduction In the assignment 
+
+#1, we are going to find the linear regression between forearm length and height. We take a survay in the lecture time and select the data of our height and forearm length in groups, then we collect the data from 346 students in to a csv file. Since we usually know more about our height than our forearm length, I set the height as explanatory variable and the forearm length as response variable so that we can use the height to predict the forearm length. 
+
+```{r, include=FALSE, warning=FALSE} 
+data <- read.csv("/Users/momo/Downloads/a20a1data.csv") #read data collected in class 
+set.seed(4232) #To make sure every time we run the code we have the same data been selected 
+ran_sample <- data[sample(nrow(data), 10), ] #ramdomly pick 10 raws of data 
+data.frame(ran_sample) #show the data frame 
+``` 
+
+```{r, include=FALSE} 
+height <- c(178, 172, 165, 186, 181, 156.1, 165, 178, 167, 152) #create the vectors of height 
+forearm <- c(26, 23.5, 20.5, 28, 25, 24, 30, 25, 24, 22) #create the vectors of forearm length 
+sample <- data.frame(forearm,height) #take two vectors into a data frame 
+data.frame(sample) #show the data frame 
+``` 
+
+## II. Exploratory Data Analysis First, we use a scatter plot to see the relationship between the height and the forearm length, we can see when the height increase, most of the forearm length increase, the dots are near from the line which best fits the data, thus we can say there might be a moderate linear correlation To check if the response variable is approcimately normal, we use the histogram and the qqplot. From the histogram, the graph does not represent the bell-shaped curve. From the qqplot, the dots are deviate from the black line, so the response variable doesn't seems normal. The median height of the sample data is 169.5 cm and the mean height of the sample data is 170.0 cm. The median forearm length of the sample data is 24.5 cm and the mean height of the sample data is 24.8 cm. The standard deviation of the height of the sample data is 10.980. The standard deviation of the forearm length of the sample data is 2.750. Thhe unusual point of the forearm length is 30. For the data of height, we do not have an unusual point. 
+```{r, echo=FALSE} 
+slope <- lm(forearm ~ height, data = sample) plot(forearm ~ height, data = sample, xlab = "height", ylab = "forearm length", main = "scatter plot of height and forearm length 4232") #create a scatter plot to see the relationship between forearm length and height 
+abline(slope) #to see the linear regression line 
+```
+```{r,echo=FALSE} 
+hist(sample$forearm, xlab = "forearm length", ylab = "frequency", main = "histogram of forearm length 4232" ) #create a histogram of the response variable (forearm) to see if it's normal 
+``` 
+```{r,echo=FALSE} 
+qqnorm(sample$forearm, ylab = "forearm length", main = "normal Q-Q plot of forearm length 4232") qqline(sample$forearm) #to check the level of normality 
+``` 
+```{r, include=FALSE} 
+summary(sample$height) #to see the min, 1st quantile, median, mean, 3rd quantile, max of height 
+summary(sample$forearm) #to see the min, 1st quantile, median, mean, 3rd quantile, max of forearm 
+length sd(sample$height) #to see the standard deviation of height 
+sd(sample$forearm) #to see the standard deviation of forearm length 
+boxplot.stats(sample$forearm)$out #to find the unusual point of forearm length 
+boxplot.stats(sample$height)$out #to find the unusual point of height 
+``` 
+
+## III. Methods and Model From the summary we know that $\hat{\beta_0}$ equals to 5.77821, $\hat{\beta_1}$ equals to 0.11189. The expected forearm length equals to the sum of $\hat{\beta_0}$ and $\hat{\beta_1}$ times the height. We set the expected forearm length to $\hat{y_i}$ and the height to $x_i$, the formula for the linear regression model will be $\hat{y_i} = \hat{\beta_0} + \hat{\beta_1} * x_i$ which is $\hat{y_i} = 5.77821 + 0.11189 * x_i$. Since the p-value for the hypothesis test (if $\beta_0$ equals to 0) is 0.6800, which is larger than the significance level 0.05, we fail to reject the hypothesis test which means $\beta_0$ is not statistically different from 0. Since the p-value for the hypothesis test (if $\beta_1$ equals to 0) is 0.1960, which is larger than the significance level 0.05, we alse fail to reject the hypothesis test which means $\beta_1$ is not statistically different from 0. $\hat{\beta_0}$ shows if height equals to 0 cm, the expected forearm length will be 5.77821 cm. $\hat{\beta_1}$ shows if height increase by 1 cm, the expected forearm length will be increase by 0.11189 cm. 
+
+```{r, echo=FALSE} 
+summary(slope) #to do the hypothesis test on $\beta_0$ and $\beta_1$ to see if they are statistically different from zero 
+```
+
+## IV. Discussions and Limitations The lurking variable to predict the forearm length might be the foot length. The reason why I choose foot length as the lurking variable is that they are all limb and it's more relevant between limb length than height. We check the normality of the residual to see if height works for the linear regression model. Since it doesn't seems the varience is constant, we can say the residual might not nonrmal.Thus the model is not appropriate for the height. There's another pair of variables to explore a simple linear regression model. I set the time we use for study as explanatory variable and GPA as response variable since I think more time on study will get higher GPA.
+
+```{r, echo=FALSE}
+residual <- resid(slope) #to calculate the residual 
+plot(sample$height, residual, xlab = "height", ylab = "residuals", main = "residual plot") #to check the level of normality 
+```
+
